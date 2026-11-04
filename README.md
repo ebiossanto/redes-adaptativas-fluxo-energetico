@@ -105,15 +105,43 @@ Simule o testbench em qualquer simulador Verilog (Icarus Verilog, ModelSim, Viva
 
 ## Como citar
 
-Se você utilizar este trabalho em pesquisa, ensino ou desenvolvimento, cite como:
+Se você utilizar este trabalho em pesquisa, ensino ou desenvolvimento, cite-o como:
+
+### Artigo (preferencial)
 
 ```
 Santos, E. S. dos (2026). Redes Adaptativas por Fluxo de Energia: um modelo
-unificado Onsager–Prigogine–Odum. Repositório de pesquisa.
+unificado Onsager–Prigogine–Odum, com teoremas de Lyapunov, índice de Morse
+de Hodge e bifurcações exatas. Repositório de pesquisa, v0.1.0.
 https://github.com/ebiossanto/redes-adaptativas-fluxo-energetico
 ```
 
-Veja `CITATION.cff` para citação em formatos de software (CFF/BibTeX).
+### ABNT (trabalho acadêmico em português)
+
+```
+SANTOS, Euzébio Soares dos. Redes Adaptativas por Fluxo de Energia: um modelo
+unificado Onsager–Prigogine–Odum, com teoremas de Lyapunov, índice de Morse
+de Hodge e bifurcações exatas. 2026. Repositório de pesquisa. Disponível em:
+https://github.com/ebiossanto/redes-adaptativas-fluxo-energetico. Acesso em:
+[insira a data de acesso].
+```
+
+### BibTeX
+
+```bibtex
+@article{santos2026redes,
+  title     = {Redes Adaptativas por Fluxo de Energia: um modelo unificado Onsager–Prigogine–Odum, com teoremas de Lyapunov, índice de Morse de Hodge e bifurcações exatas},
+  author    = {Euzébio Soares dos Santos},
+  year      = {2026},
+  month     = nov,
+  version   = {0.1.0},
+  url       = {https://github.com/ebiossanto/redes-adaptativas-fluxo-energetico},
+  note      = {Rascunho de pesquisa. Verificar referências bibliográficas antes de publicar.}
+}
+```
+
+Os arquivos `CITATION.cff` (formato CFF para repositórios de software) e
+`CITATION.bib` (BibTeX) estão na raiz do repositório.
 
 ---
 

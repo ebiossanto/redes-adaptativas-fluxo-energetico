@@ -32,3 +32,9 @@ preferred-citation:
       family-names: "dos Santos"
   year: 2026
   url: "https://github.com/ebiossanto/redes-adaptativas-fluxo-energetico"
+  abstract: >-
+    Unificação da Termodinâmica Linear de Processos Irreversíveis (Onsager),
+    Estruturas Dissipativas (Prigogine) e Princípio da Potência Máxima (Odum)
+    em uma única lei de adaptação de condutâncias para redes adaptativas
+    descentralizadas, com teoremas de Lyapunov, índice de Morse de Hodge e
+    bifurcações exatas.
