@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+.env
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Ambientes
+*.egg-info/
+*.egg
+
+# LaTeX
+*.aux
+*.log
+*.out
+*.toc
+*.bbl
+*.blg
+*.pdf
+*.synctex.gz
+
+# Sistemas operacionais
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Dados e resultados
+results.json
+*.csv
+
+# Verilog simulação
+*.vcd
+*.fst
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

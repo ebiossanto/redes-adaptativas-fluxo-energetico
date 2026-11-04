@@ -1,0 +1,34 @@
+cff-version: 1.2.0
+title: "Redes Adaptativas por Fluxo de Energia: um modelo unificado Onsager–Prigogine–Odum"
+message: "Se você usar este trabalho, por favor cite-o conforme indicado abaixo."
+type: software
+authors:
+  - given-names: "Euzébio Soares"
+    family-names: "dos Santos"
+    email: ""
+    affiliation: ""
+    orcid: ""
+repository-code: "https://github.com/ebiossanto/redes-adaptativas-fluxo-energetico"
+url: "https://github.com/ebiossanto/redes-adaptativas-fluxo-energetico"
+version: "0.1.0"
+date-released: "2026-11-04"
+keywords:
+  - redes adaptativas
+  - fluxo de energia
+  - termodinâmica de processos irreversíveis
+  - estruturas dissipativas
+  - princípio da potência máxima
+  - Onsager
+  - Prigogine
+  - Odum
+  - Lyapunov
+  - decomposição de Hodge
+  - computação resiliente
+preferred-citation:
+  type: article
+  title: "Redes Adaptativas por Fluxo de Energia: um modelo unificado Onsager–Prigogine–Odum, com teoremas de Lyapunov, índice de Morse de Hodge e bifurcações exatas"
+  authors:
+    - given-names: "Euzébio Soares"
+      family-names: "dos Santos"
+  year: 2026
+  url: "https://github.com/ebiossanto/redes-adaptativas-fluxo-energetico"
