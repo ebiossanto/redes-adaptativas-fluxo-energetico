@@ -28,9 +28,13 @@ venv/
 Thumbs.db
 desktop.ini
 
-# Dados e resultados
-results.json
+# Dados e resultados (resultados consolidados sao versionados; execucoes por teste nao)
+results_*.json
 *.csv
+
+# Cache Python
+__pycache__/
+*.py[cod]
 
 # Verilog simulação
 *.vcd

@@ -66,15 +66,34 @@ redes-adaptativas-fluxo-energetico/
 
 ## Como usar os códigos
 
-### Simulação numérica (Python)
+### Simulação numérica (Python) — pacote de reprodução
 
-O script `codigo/otra_unified.py` implementa o modelo unificado OTRA-γ e reproduz as verificações numéricas dos teoremas (convergência de F, regra do meio, espectro de Hodge, pontos críticos).
+O script `codigo/otra_unified.py` é o **pacote oficial de reprodução** (extraído de `otra_pacote.zip`). Ele implementa o modelo unificado OTRA-γ e reproduz todas as verificações numéricas do artigo (Teoremas 1–4 e Proposição 6), gerando as 5 figuras e o `results.json` consolidado.
 
 ```bash
+# Instale as dependencias (na primeira vez)
+pip install numpy scipy matplotlib
+
+# Rode todos os testes (A, B, pitch, chain, fold, frac)
 python codigo/otra_unified.py
+
+# Rode somente testes escolhidos
+python codigo/otra_unified.py A fold frac
 ```
 
-Requer apenas a biblioteca padrão do Python (ou NumPy, se disponível). Os resultados são impressos no terminal e podem ser salvos em `results.json`.
+Saídas geradas:
+- `papers/01-paper-principal/figuras/fig1_lyapunov.png` … `fig5_fractional.png`
+- `codigo/results.json` — números citados no artigo (precisão ~1e-9 nos espectros)
+
+Os testes mapeiam-se aos resultados do artigo:
+| Teste | Resultado verificado | Figura |
+|-------|----------------------|--------|
+| A | Teorema 1 — Lyapunov / convergência global (F não crescente, minimizador único) | fig1 |
+| B | Teorema 3 — Hodge-Morse / espectro do Hessiano (cortes, escala, ciclos) | — |
+| pitch | Teorema 4(a) — pitchfork em γ=1 (2 canais paralelos) | fig2 |
+| chain | Teorema 4(d) — transcritica em cadeia, V_c = N√c | fig3 |
+| fold | Teorema 4(c) — dobra exata / biestabilidade, E_c | fig4 |
+| frac | Proposição 6 — memória fracionária de Caputo, lei de potência | fig5 |
 
 ### Hardware (Verilog)
 
