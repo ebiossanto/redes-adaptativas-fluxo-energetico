@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "otra"
+version = "0.1.0"
+description = "OTRA: redes adaptativas por fluxo de energia"
+requires-python = ">=3.8"
+dependencies = [
+    "numpy",
+    "scipy",
+    "matplotlib",
+]
+
+[project.scripts]
+otra = "codigo.otra_unified:main"
+
+[tool.setuptools.packages.find]
+include = ["codigo"]

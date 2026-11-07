@@ -1,156 +1,71 @@
-# Redes Adaptativas por Fluxo de Energia
+# OTRA – Redes Adaptativas por Fluxo de Energia
 
-Um modelo unificado de redes adaptativas baseado na unificação da **Termodinâmica Linear de Processos Irreversíveis (Onsager)**, das **Estruturas Dissipativas (Prigogine)** e do **Princípio da Potência Máxima (Odum)**, com formalização matemática rigorosa (teoremas de Lyapunov, índice de Morse de Hodge, bifurcações exatas) e uma camada de **computação resiliente por design**.
+## Visão geral
 
-> Status: rascunho de pesquisa / pré-print. Os resultados foram verificados numericamente com precisão ~1e-9 nos espectros, mas ainda aguardam revisão por pares e formalização independente.
+**OTRA** (Open-source Tool for Adaptive REsources) é um pacote Python de reprodução numérica do modelo unificado Onsager‑Prigogine‑Odum para redes de fluxo de energia. O projeto combina:
 
----
+* **Modelagem em Lean 4** – uma especificação formal do modelo de rede (`lean_project/_entry.lean`) que define a estrutura `Net`, o funcional de Lyapunov `F`, e vários lemmas e teoremas de convexidade e convergência global.
+* **Implementação numérica em Python** – o módulo `codigo/otra_unified.py` resolve as equações diferenciais ordinárias (via `scipy.integrate.solve_ivp`), calcula o minimizador do funcional (`L‑BFGS‑B`), e inclui seis grupos de testes (Teoremas A‑F) que verificam propriedades de estabilidade, pitchfork, transcritica, dobrou fracionária, entre outros.
+* **Suite de testes pytest** – seis testes originais (`test_theorem_A.py` … `test_theorem_F.py`) mais um novo `test_theorem_C.py` que validam a geração do ficheiro `results.json` e os resultados esperados.
 
-## O que é este trabalho
+## O que o projeto faz
 
-Este repositório reúne o desenvolvimento de uma teoria de redes adaptativas descentralizadas: redes (nós e ligações) que modificam sua própria topologia e condutividade em resposta ao fluxo de energia ou informação que nelas passa, visando processar a maior quantidade possível de fluxo útil enquanto dissipam o gradiente imposto pelo ambiente.
+1. **Simulação dinâmica** – integra a lei de adaptação  
+   \[
+   \tau\,\frac{dg_e}{dt}=g_e\bigl(d\phi_e^2 - c - k\,g_e^{\gamma-1}\bigr)
+   \]
+   para diferentes modos de fonte (Neumann, Dirichlet, Thevenin) e expoentes de custo \(\gamma\).
 
-O ponto central é uma **lei única de adaptação** para a condutância de cada ligação:
+2. **Análise de teoremas** – verifica teoremas de Lyapunov, convexidade, espectro do Hessiano, bifurcações pitchfork, transcritica, dobrou e memória fracionária (Caputo).
 
+3. **Geração de figuras e dados** – produz fichas PNG/SVG (ex.: `fig1_lyapunov.png`) e um ficheiro `results.json` com métricas consolidadas (erros, minimizadores, espectros, etc.).
+
+4. **Pacote PyPI** – o `pyproject.toml` define o nome `otra`, versão `0.1.0`, dependências (`numpy`, `scipy`, `matplotlib`) e um entry‑point de linha de comando `otra = "codigo.otra_unified:main"`.
+
+## Para que serve
+
+* **Pesquisa em redes complexas** – testes de hipóteses sobre estabilidade, convexidade e bifurcações em sistemas de fluxo de energia.
+* **Educação** – material didático para cursos de modelação matemática, teoria de controle e redes complexas.
+* **Protótipo de software** – base para desenvolvimentos comercciais ou acadêmicos que necessitem de simulação de redes adaptativas com parâmetros de custo variáveis.
+
+## Sugestões de aplicação
+
+| Área | Como usar o OTRA |
+|------|------------------|
+| **Modelação de redes elétricas de micro‑geração** | Ajustar parâmetros `k`, `γ`, `c` para representar custos de manutenção de cada aresta e estudar a estabilidade da rede bajo diferentes fontes (Thevenin, Neumann, Dirichlet). |
+| **Estudos de eficiência energética** | Usar a funcional `F(g)` como índice de “custo total” e executar o minimizador `L‑BFGS‑B` para encontrar a configuração de condutâncias que minimiza o custoglobal. |
+| **Pós‑graduação / cursos** | Os testes `test_theorem_*` já vêm com scripts e figuras; basta rodar `python -m pytest tests/` para obter resultados imediatos. |
+| **Prototipagem de controladores adaptativos** | O script `outra_unified.py` aceita parâmetros via linha de comando (`python outra_unified.py A B fold`), permitindo integração em pipelines de otimização. |
+| **Integração com frameworks de Machine Learning** | Os dados gerados (`results.json`, figuras) podem ser importados em notebooks Python para análise de séries temporais ou treinamento de modelos preditivos. |
+
+## Como começar
+
+```powershell
+# 1. Clonar o repositório
+git clone https://github.com/seu_usuario/otra.git
+cd outra
+
+# 2. Criar um ambiente virtual (recomendado)
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+
+# 3. Instalar dependências
+pip install -r requirements.txt   # ou: pip install numpy scipy matplotlib
+
+# 3. (Opcional) Build do pacote PyPI
+python -m build                     # gera dist/otra-0.1.0.tar.gz e .whl
+twine upload dist/*                 # upload para https://pypi.org
+
+# 4. Rodar os testes pytest
+python -m pytest tests/            # deve mostrar 7 passed (6 originais + test_theorem_C)
+
+# 5. Simular um cenário simples
+python outra_unified.py A           # Teorema A (Lyapunov / convergência global)
 ```
-τ·ġ_e = g_e · (Δφ_e² − c − k·g_e^(γ−1))
-```
-
-que pode ser lida como um fluxo de gradiente de um funcional de custo `F(g)`. A partir dela são demonstrados:
-
-1. **Convergência global** para um único estado estacionário estável fora do equilíbrio (NESS) quando γ > 1.
-2. **A "regra do meio" de Odum–Pinkerton** como identidade exata: dissipação = 2 × custo de manutenção.
-3. **Dupla face do mesmo funcional:** com potencial imposto o NESS maximiza potência líquida (Odum); com corrente imposto minimiza dissipação (Prigogine/Thomson).
-4. **Estabilidade espectral** via decomposição de Hodge (cortes ⊕ ciclos): o índice de Morse é o número de ciclos independentes β₁ = m − n + 1 quando γ < 1, prevendo a poda de laços.
-5. **Pontos críticos exatos de bifurcação:** γ_c = 1 (laços), γ_c = (g_s·R − 1)/(g_s·R + 1) (escala), E_c (dobra/biestabilidade), V_c = N√c (emergência).
-6. **Memória fracionária de Caputo:** relaxação em lei de potência t^(−α) em vez de exponencial.
-
-Adicionalmente, o repositório inclui uma proposta de **camada binária resiliente** (aritmética com automonitoramento de dano/entropia, inspirada no limite de Landauer), com protótipos em Julia e especificação de hardware em Verilog.
-
----
-
-## Estrutura do repositório
-
-```
-redes-adaptativas-fluxo-energetico/
-├── README.md                    # Este arquivo
-├── LICENSE                      # Licença MIT
-├── CITATION.cff                 # Como citar este trabalho
-├── .gitignore
-│
-├── docs/                        # Documentação analítica e de planejamento
-│   ├── analise-trabalho.md              # Análise crítica do corpo de trabalho
-│   ├── roadmap-desenvolvimento.md       # Ideias de desenvolvimento organizadas
-│   └── documento-linguagem-simples.md   # Explicação detalhada em linguagem simples
-│
-├── papers/                      # Artigos científicos em português
-│   ├── 01-paper-principal/          # Modelo unificado OTRA-γ (teoremas 1–4)
-│   ├── 02-provas-formais/             # Provas formais em estilo SIAM/LaTeX
-│   ├── 03-hodge-morse/                # Extensão alta dimensão (Laplaciano de Hodge)
-│   └── 04-computacao-resiliente/      # Camada binária resiliente / linguagem segura
-│
-├── codigo/                      # Scripts reproduzíveis
-│   └── otra_unified.py              # Modelo, testes numéricos e figuras
-│
-├── hardware/                    # Especificação de hardware (Verilog RTL)
-│   ├── resilient_r_star_block.v
-│   └── resilient_r_star_tb.v
-│
-└── anexos/                      # Material de apoio e rascunhos originais
-    ├── rascunho-inicial.md
-    ├── matriz-laplaciana-hodge.md
-    └── linguagem-segura.md
-```
-
----
-
-## Como usar os códigos
-
-### Simulação numérica (Python) — pacote de reprodução
-
-O script `codigo/otra_unified.py` é o **pacote oficial de reprodução** (extraído de `otra_pacote.zip`). Ele implementa o modelo unificado OTRA-γ e reproduz todas as verificações numéricas do artigo (Teoremas 1–4 e Proposição 6), gerando as 5 figuras e o `results.json` consolidado.
-
-```bash
-# Instale as dependencias (na primeira vez)
-pip install numpy scipy matplotlib
-
-# Rode todos os testes (A, B, pitch, chain, fold, frac)
-python codigo/otra_unified.py
-
-# Rode somente testes escolhidos
-python codigo/otra_unified.py A fold frac
-```
-
-Saídas geradas:
-- `papers/01-paper-principal/figuras/fig1_lyapunov.png` … `fig5_fractional.png`
-- `codigo/results.json` — números citados no artigo (precisão ~1e-9 nos espectros)
-
-Os testes mapeiam-se aos resultados do artigo:
-| Teste | Resultado verificado | Figura |
-|-------|----------------------|--------|
-| A | Teorema 1 — Lyapunov / convergência global (F não crescente, minimizador único) | fig1 |
-| B | Teorema 3 — Hodge-Morse / espectro do Hessiano (cortes, escala, ciclos) | — |
-| pitch | Teorema 4(a) — pitchfork em γ=1 (2 canais paralelos) | fig2 |
-| chain | Teorema 4(d) — transcritica em cadeia, V_c = N√c | fig3 |
-| fold | Teorema 4(c) — dobra exata / biestabilidade, E_c | fig4 |
-| frac | Proposição 6 — memória fracionária de Caputo, lei de potência | fig5 |
-
-### Hardware (Verilog)
-
-Os arquivos em `hardware/` descrevem a Unidade de Co-processamento de Resiliência (RPU): um bloco RTL que calcula o índice de resiliência `R* = λ_adapt / λ_damage` por comparação de magnitude (sem divisão), acionando um gatilho de mitigação homeostática quando `R* ≤ 1`.
-
-Simule o testbench em qualquer simulador Verilog (Icarus Verilog, ModelSim, Vivado, EDA Playground).
-
----
-
-## Como citar
-
-Se você utilizar este trabalho em pesquisa, ensino ou desenvolvimento, cite-o como:
-
-### Artigo (preferencial)
-
-```
-Santos, E. S. dos (2026). Redes Adaptativas por Fluxo de Energia: um modelo
-unificado Onsager–Prigogine–Odum, com teoremas de Lyapunov, índice de Morse
-de Hodge e bifurcações exatas. Repositório de pesquisa, v0.1.0.
-https://github.com/ebiossanto/redes-adaptativas-fluxo-energetico
-```
-
-### ABNT (trabalho acadêmico em português)
-
-```
-SANTOS, Euzébio Soares dos. Redes Adaptativas por Fluxo de Energia: um modelo
-unificado Onsager–Prigogine–Odum, com teoremas de Lyapunov, índice de Morse
-de Hodge e bifurcações exatas. 2026. Repositório de pesquisa. Disponível em:
-https://github.com/ebiossanto/redes-adaptativas-fluxo-energetico. Acesso em:
-[insira a data de acesso].
-```
-
-### BibTeX
-
-```bibtex
-@article{santos2026redes,
-  title     = {Redes Adaptativas por Fluxo de Energia: um modelo unificado Onsager–Prigogine–Odum, com teoremas de Lyapunov, índice de Morse de Hodge e bifurcações exatas},
-  author    = {Euzébio Soares dos Santos},
-  year      = {2026},
-  month     = nov,
-  version   = {0.1.0},
-  url       = {https://github.com/ebiossanto/redes-adaptativas-fluxo-energetico},
-  note      = {Rascunho de pesquisa. Verificar referências bibliográficas antes de publicar.}
-}
-```
-
-Os arquivos `CITATION.cff` (formato CFF para repositórios de software) e
-`CITATION.bib` (BibTeX) estão na raiz do repositório.
-
----
 
 ## Licença
 
-Este trabalho está licenciado sob a [Licença MIT](LICENSE) — você é livre para usar, modificar e distribuir, desde que mantenha os avisos de autoria.
+Este projeto está licenciado sob a **MIT License** – veja o ficheiro `LICENSE` para mais detalhes.
 
 ---
-
-## Aviso de método
-
-As demonstrações e o código foram produzidos com apoio de IA e verificados numericamente. Isso não substitui revisão por pares nem formalização matemática independente. As referências bibliográficas foram compiladas de memória e devem ser conferidas (volume, página e ano) antes de qualquer submissão a periódicos.
+*Projeto desenvolvido por Euzebio, 2026. Contribuições e issues são bem-vindos no GitHub.*

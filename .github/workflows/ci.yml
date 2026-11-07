@@ -1,0 +1,46 @@
+name: CI – Test & Lint
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: windows-latest   # or ubuntu-latest if you prefer Linux
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .[]
+
+      - name: Run pytest suite
+        run: python -m pytest tests/ -v
+
+      - name: Verify SVG figures exist
+        run: |
+          $svg = Get-ChildItem -Path "papers/01-paper-principal/figuras" -Filter "*.svg"
+          if (-not $svg) {
+            Write-Error "Nenhuma figura SVG encontrada!"
+            exit 1
+          } else {
+            Write-Host "Figuras SVG encontradas: $($svg.Count)"
+          }
+
+      - name: (Optional) Run Lean check
+        if: runner needs.leanCheck
+        run: |
+          # Only run if Lean is available
+          if (Get-Command lean -ErrorAction SilentlyContinue) {
+            lean --make lean_project
+          } else {
+            Write-Host "Lean não instalado; pulando verificação."
+          }

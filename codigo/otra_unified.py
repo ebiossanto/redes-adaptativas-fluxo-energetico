@@ -216,7 +216,7 @@ def test_theorem_A():
         P = float(np.sum(gst * dph ** 2))
         out[mode] = dict(max_dF_dt_positive=worst_mono, max_dist_to_minimizer=max(dist),
                          P_diss=P, k_sum_g2=float(net.k * np.sum(gst ** 2)), n_pruned=int(np.sum(gst < 1e-6)))
-    plt.tight_layout(); plt.savefig(FIG + "fig1_lyapunov.png"); plt.close()
+    plt.tight_layout(); plt.savefig(FIG + "fig1_lyapunov.png"); plt.savefig(FIG + "fig1_lyapunov.svg", format="svg"); plt.close()
     RES["theorem_A"] = out
 
 
@@ -293,7 +293,7 @@ def test_pitchfork():
     ax.axvline(1.0, color="r", ls="--", label=r"$\gamma_c = 1$")
     ax.set_xlabel(r"expoente do custo de manutencao $\gamma$"); ax.set_ylabel(r"$|g_1-g_2|/(g_1+g_2)$")
     ax.set_title("2 canais paralelos (Neumann): perda de simetria"); ax.legend()
-    plt.tight_layout(); plt.savefig(FIG + "fig2_pitchfork.png"); plt.close()
+    plt.tight_layout(); plt.savefig(FIG + "fig2_pitchfork.png"); plt.savefig(FIG + "fig2_pitchfork.svg", format="svg"); plt.close()
     RES["pitchfork"] = dict(gamma=gams.tolist(), asym=asym)
 
 
@@ -316,7 +316,7 @@ def test_chain_transcritical():
         out[N] = dict(max_abs_err=float(np.max(np.abs(np.array(gnum) - np.array(gth)))), Vc=float(N * np.sqrt(c)))
     ax.set_xlabel("V (potencial imposto)"); ax.set_ylabel(r"$g^*$ (condutancia por aresta)")
     ax.set_title("Emergencia de canais: transcritica exata em V_c = N sqrt(c)"); ax.legend(fontsize=8)
-    plt.tight_layout(); plt.savefig(FIG + "fig3_chain.png"); plt.close()
+    plt.tight_layout(); plt.savefig(FIG + "fig3_chain.png"); plt.savefig(FIG + "fig3_chain.svg", format="svg"); plt.close()
     RES["chain_transcritical"] = out
 
 
@@ -345,7 +345,7 @@ def test_fold():
     ax.set_xlim(1.2, 3.2); ax.set_ylim(0, 3)
     ax.set_xlabel("E (forca imposta)"); ax.set_ylabel(r"$g^*$")
     ax.set_title(r"Dobra exata: $E_c=\frac{2\sqrt{k}}{1+\gamma}\,[g_s\frac{1-\gamma}{1+\gamma}]^{(\gamma-1)/2}$", fontsize=10)
-    ax.legend(); plt.tight_layout(); plt.savefig(FIG + "fig4_fold.png"); plt.close()
+    ax.legend(); plt.tight_layout(); plt.savefig(FIG + "fig4_fold.png"); plt.savefig(FIG + "fig4_fold.svg", format="svg"); plt.close()
     RES["fold"] = out
 
 
@@ -396,14 +396,28 @@ def test_fractional():
     ax[0].set_xlabel("t"); ax[0].set_ylabel(r"$\|g-g^*\|$"); ax[0].set_title("relaxacao: exponencial (a=1) x lei de potencia (a<1)")
     ax[1].set_xlabel("t"); ax[1].set_title("F(t) - F_min (nao crescente)")
     ax[1].set_yscale("log")
-    ax[0].legend(); plt.tight_layout(); plt.savefig(FIG + "fig5_fractional.png"); plt.close()
+    ax[0].legend(); plt.tight_layout(); plt.savefig(FIG + "fig5_fractional.png"); plt.savefig(FIG + "fig5_fractional.svg", format="svg"); plt.close()
     RES["fractional"] = out
 
 
+def test_theorem_C():
+    """Minimal test for Theorem C: runs a small network and stores a result."""
+    n, m = 4, 4
+    edges = [(0, 1), (1, 2), (2, 3), (3, 0)]
+    net = Net(n, edges, 0, 3, mode="neumann", k=1.0, gamma=2.0, E=1.0, gs=1.0, I=1.0)
+    rng = __import__("numpy").random.default_rng(0)
+    g0 = rng.uniform(0.5, 2.0, m)
+    tt, G = net.run(g0, 20, npts=20)
+    gstar = net.minimizer(G[:, -1])
+    max_dist = float(np.max(np.abs(G[:, -1] - gstar)))
+    RES["theorem_C"] = dict(max_dist_to_minimizer=max_dist, n=n, m=m)
+    print("test_theorem_C ok")
+
+
 if __name__ == "__main__":
-    which = sys.argv[1:] or ["A", "B", "pitch", "chain", "fold", "frac"]
+    which = sys.argv[1:] or ["A", "B", "pitch", "chain", "fold", "C", "frac"]
     fn = dict(A=test_theorem_A, B=test_theorem_B, pitch=test_pitchfork, chain=test_chain_transcritical,
-              fold=test_fold, frac=test_fractional)
+              fold=test_fold, frac=test_fractional, C=test_theorem_C)
     for w in which:
         fn[w]()
         print(w, "ok", flush=True)

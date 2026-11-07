@@ -1,0 +1,11 @@
+name = "otra"
+version = "0.1.0"
+defaultTargets = ["otra"]
+
+[[lean_lib]]
+name = "Mathlib"
+  path = "C:/Users/Euzebio/.lean/mathlib4"
+
+[[lean_exe]]
+name = "otra"
+root = "_entry"
